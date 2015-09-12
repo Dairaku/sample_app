@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Static pages" do
+describe "Static pages" do #静的ページのテスト
 
   describe "Home page" do
 
