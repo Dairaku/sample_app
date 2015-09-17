@@ -31,6 +31,23 @@ describe "User pages" do #ユーザーページのテスト
       end
     end
 
+    describe "edit" do
+    let(:user) { FactoryGirl.create(:user) }
+    before { visit edit_user_path(user) }
+
+      describe "page" do
+        it { should have_content("Update your profile") }
+        it { should have_title("Edit user") }
+        it { should have_link('change', href: 'http://gravatar.com/emails') }
+      end
+
+      describe "with invalid information" do
+        before { click_button "Save changes" }
+
+        it { should have_content('error') }
+      end
+    end
+
     describe "with valid information" do
       before do
         fill_in "Name",         with: "Example User"
@@ -38,6 +55,12 @@ describe "User pages" do #ユーザーページのテスト
         fill_in "Password",     with: "foobar"
         fill_in "Confirmation", with: "foobar"
       end
+
+      it { should have_title(new_name) }
+      it { should have_selector('div.alert.alert-success') }
+      it { should have_link('Sign out', href: signout_path) }
+      specify { expect(user.reload.name).to  eq new_name }
+      specify { expect(user.reload.email).to eq new_email }
 
       it "should create a user" do
         expect { click_button submit }.to change(User, :count).by(1)

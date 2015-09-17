@@ -1,5 +1,6 @@
 module SessionsHelper
-	def sign_in(user)
+
+  def sign_in(user)
     remember_token = User.new_remember_token #1) トークンを新規作成する。
     cookies.permanent[:remember_token] = remember_token #2) 暗号化されていないトークンをブラウザのcookiesに保存する。
     user.update_attribute(:remember_token, User.encrypt(remember_token)) #3) 暗号化したトークンをデータベースに保存する。
@@ -22,5 +23,12 @@ module SessionsHelper
   def sign_out
     self.current_user = nil
     cookies.delete(:remember_token)
+  end
+  def redirect_back_or(default)
+    redirect_to(session[:return_to] || default)
+    session.delete(:return_to)
+  end
+  def store_location
+    session[:return_to] = request.url
   end
 end
