@@ -1,8 +1,16 @@
 SampleApp::Application.routes.draw do
   get "users/new"
-  resources :users
+  # 単一オブジェクトにアクションを追加するときは、member
+  # idを指定しないときは、collection
+  resources :users do
+    member do
+      get :following, :followers
+    end
+  end
   resources :sessions, only: [:new, :create, :destroy]
   resources :microposts, only: [:create, :destroy]
+  resources :relationships, only: [:create, :destroy]
+
 
   root  'static_pages#home'
 

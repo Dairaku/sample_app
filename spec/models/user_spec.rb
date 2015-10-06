@@ -6,9 +6,9 @@ before do
   @user = User.new(name: "Example User", email: "user@example.com", password: "foobar", password_confirmation: "foobar")
 end
 
-  subject { @user }
+  subject { @user } # subjectは対象
 
-  it { should respond_to(:name) }
+  it { should respond_to(:name) }　# respond_toメソッドは、引数に一つシンボルを取って反応するかどうか。
   it { should respond_to(:email) }
   it { should respond_to(:password_digest) }
   it { should respond_to(:password) }
@@ -17,6 +17,11 @@ end
   it { should respond_to(:authenticate) }
 
   it { should be_valid }
+
+  describe "with a password that's too short" do
+    before { @user.password = @user.password_confirmation = "a" * 5 }
+    it { should be_invalid }
+  end
 
   describe "when password is not present" do
     before do
@@ -31,20 +36,16 @@ end
     it { should_not be_valid }
   end
 
-  describe "with a password that's too short" do
-    before { @user.password = @user.password_confirmation = "a" * 5 }
-    it { should be_invalid }
-  end
-
   describe "return value of authenticate method" do
     before { @user.save }
     let(:found_user) { User.find_by(email: @user.email) }
+    #パスワードが一致する場合と一致しない場合がネストされている。
 
-    describe "with valid password" do
+    describe "with valid password" do # パスワードが一致する場合
       it { should eq found_user.authenticate(@user.password) }
     end
 
-    describe "with invalid password" do
+    describe "with invalid password" do #パスワードが一致しない場合
       let(:user_for_invalid_password) { found_user.authenticate("invalid") }
 
       it { should_not eq user_for_invalid_password }
